@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/nmck.svg)](https://badge.fury.io/py/nmck)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Nmck** is a powerful command-line tool designed to check the availability of names across multiple domains and platforms. Whether you are naming a startup, a new project, or an open-source library, Namok helps you secure your brand identity by verifying if a name is already taken.
+**Nmck** is a powerful command-line tool designed to check the availability of names across multiple domains and platforms. Whether you are naming a startup, a new project, or an open-source library, Nmck helps you secure your brand identity by verifying if a name is already taken.
 
 ## Features
 
@@ -63,7 +63,7 @@ Software & Packages:
 
 **Important:** GitHub and GitLab have strict API rate limits. **To get complete search results (including repo search with exact total counts), you must configure API tokens.** Without tokens, some features will be limited or return incomplete data.
 
-Namok allows you to set authentication tokens to increase API rate limits and avoid blocks.
+Nmck allows you to set authentication tokens to increase API rate limits and avoid blocks.
 
 **Set a Token:**
 
