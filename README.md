@@ -1,5 +1,8 @@
 # Nmck
 
+[![PyPI version](https://badge.fury.io/py/nmck.svg)](https://badge.fury.io/py/nmck)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **Nmck** is a powerful command-line tool designed to check the availability of names across multiple domains and platforms. Whether you are naming a startup, a new project, or an open-source library, Namok helps you secure your brand identity by verifying if a name is already taken.
 
 ## Features
@@ -31,7 +34,7 @@ nmck --version
 
 ### Option 2: Install via pip
 ```bash
-pip install .
+pip install nmck
 ```
 
 ## Usage
