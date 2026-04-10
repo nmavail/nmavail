@@ -32,6 +32,11 @@ dependencies = [
     "beautifulsoup4>=4.14.3",
 ]
 
+[project.urls]
+Homepage = "https://github.com/cphotor/nmck"
+Repository = "https://github.com/cphotor/nmck"
+"Bug Tracker" = "https://github.com/cphotor/nmck/issues"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
