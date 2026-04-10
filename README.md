@@ -59,9 +59,13 @@ Software & Packages:
 
 ### Configuration
 
-**Important:** GitHub and GitLab have strict API rate limits. **To get complete search results (including repo search with exact total counts), you must configure API tokens.** Without tokens, some features will be limited or return incomplete data.
+**Important:** GitHub and GitLab have API rate limits. **Tokens are required for higher rate limits and complete functionality.**
 
-Nmck allows you to set authentication tokens to increase API rate limits and avoid blocks.
+**Rate Limits:**
+- **GitHub (no token)**: 60 requests/hour, full functionality
+- **GitHub (with token)**: 5,000 requests/hour
+- **GitLab (no token)**: Limited API access, no `x-total` header in repo search
+- **GitLab (with token)**: Full API access with complete metadata
 
 **Set a Token:**
 
@@ -78,24 +82,16 @@ Nmck allows you to set authentication tokens to increase API rate limits and avo
    ```
 
 **GitLab Token:**
-1. Go to [GitLab Settings > Access Tokens](https://gitlab.com/-/user_settings/personal_access_tokens) (or JiHu GitLab equivalent)
+1. Go to [GitLab Settings > Access Tokens](https://gitlab.com/-/user_settings/personal_access_tokens)
 2. Click "Add new token"
 3. Set expiration date and name (e.g., `nmck-checker`)
 4. **Required scopes**:
    - `read_api` - **Required** for API access (search repositories & users)
-   - `read_user` - Optional, for user verification
+   - `read_user` - Optional, for enhanced user verification
 5. Copy the token and run:
    ```bash
    nmck set gitlab_token glpat-xxxxxxxxxxxx
    ```
-
-> **Note:** GitLab.com may restrict access from certain regions. If you're in mainland China, the tool will automatically use JiHu GitLab (jihulab.com) when no token is configured.
-
-**Using Environment Variables (Alternative):**
-```bash
-export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
-export GITLAB_TOKEN=glpat-xxxxxxxxxxxx
-```
 
 **Check Version:**
 ```bash

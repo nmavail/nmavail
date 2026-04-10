@@ -1,5 +1,6 @@
 import httpx
 
+from ..config import DEFAULT_TIMEOUT
 from .base import BaseChecker
 
 
@@ -16,18 +17,21 @@ class PackageChecker(BaseChecker):
         url = self._url_template.format(name=name)
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, timeout=15.0)
+                response = await client.get(url, timeout=DEFAULT_TIMEOUT)
                 if response.status_code == 404:
                     return True
                 elif response.status_code == 200:
                     return False
                 else:
                     return {"error": f"HTTP {response.status_code}"}
-            except Exception:
+            except httpx.TimeoutException:
                 return {"error": "Timeout"}
+            except httpx.RequestError as e:
+                # Network errors, DNS failures, connection refused, etc.
+                return {"error": f"Network: {type(e).__name__}"}
 
 
-# 预定义的检查器实例
+# Predefined checker instances
 PYPI_CHECKER = PackageChecker("PyPI", "https://pypi.org/simple/{name}/")
 NPM_CHECKER = PackageChecker("NPM", "https://registry.npmjs.org/{name}")
 CRATES_CHECKER = PackageChecker("Crates.io", "https://crates.io/api/v1/crates/{name}")

@@ -1,11 +1,12 @@
 import httpx
 from bs4 import BeautifulSoup
 
+from ..config import DEFAULT_TIMEOUT
 from .base import BaseChecker
 
 
 class BaseUnixChecker(BaseChecker):
-    """提供带镜像重试功能的基类"""
+    """Base class with mirror retry functionality"""
 
     async def _check_urls(
         self, name: str, urls: list[str], is_list: bool = False, is_html: bool = False
@@ -14,26 +15,30 @@ class BaseUnixChecker(BaseChecker):
         for url in urls:
             async with httpx.AsyncClient() as client:
                 try:
-                    response = await client.get(url, headers=headers, timeout=10.0)
+                    response = await client.get(
+                        url, headers=headers, timeout=DEFAULT_TIMEOUT
+                    )
                     if response.status_code == 404:
-                        return True  # 可用
+                        return True  # Available
                     elif response.status_code == 200:
-                        # 根据不同类型判断是否真的“存在”
+                        # Check existence based on type
                         if is_list:
                             data = response.json()
-                            # AUR RPC 返回 results 列表
+                            # AUR RPC returns results list
                             if isinstance(data, dict) and not data.get("results"):
                                 return True
                         elif is_html:
-                            # 简单判断 HTML 中是否包含包名（简化逻辑）
+                            # Simple check if package name exists in HTML
                             if name not in response.text:
                                 return True
                         else:
-                            # JSON API 通常 200 就代表存在
+                            # JSON API usually means exists if 200
                             pass
-                        return False  # 已占用
-                except Exception:
-                    continue  # 尝试下一个镜像
+                        return False  # Taken
+                except httpx.TimeoutException:
+                    continue  # Try next mirror
+                except httpx.RequestError:
+                    continue  # Try next mirror
         return {"error": "Timeout"}
 
 
@@ -52,20 +57,24 @@ class HomebrewChecker(BaseUnixChecker):
         for url in urls:
             async with httpx.AsyncClient() as client:
                 try:
-                    response = await client.get(url, headers=headers, timeout=10.0)
+                    response = await client.get(
+                        url, headers=headers, timeout=DEFAULT_TIMEOUT
+                    )
                     if response.status_code == 404:
-                        return True  # 可用
+                        return True  # Available
                     elif response.status_code == 200:
-                        # 校验 JSON 内容，确保不是错误页
+                        # Validate JSON content to ensure it's not an error page
                         try:
                             data = response.json()
-                            # Homebrew API 返回的 JSON 通常包含 "name" 字段
+                            # Homebrew API usually returns JSON with "name" field
                             return not (
                                 isinstance(data, dict) and data.get("name") == name
                             )
-                        except Exception:
+                        except httpx.RequestError:
                             continue
-                except Exception:
+                except httpx.TimeoutException:
+                    continue
+                except httpx.RequestError:
                     continue
         return {"error": "Timeout"}
 
@@ -84,12 +93,28 @@ class AurChecker(BaseUnixChecker):
         for url in urls:
             async with httpx.AsyncClient() as client:
                 try:
-                    response = await client.get(url, headers=headers, timeout=10.0)
+                    response = await client.get(
+                        url, headers=headers, timeout=DEFAULT_TIMEOUT
+                    )
                     if response.status_code == 200:
                         data = response.json()
-                        # AUR RPC 返回 results 列表
-                        return not (isinstance(data, dict) and not data.get("results"))
-                except Exception:
+                        # AUR RPC returns results list
+                        # Check if response is an error
+                        if "error" in data:
+                            # "Too many package results" means package exists
+                            if "Too many" in data["error"]:
+                                return False  # Package exists, taken
+                            return {"error": data["error"]}
+
+                        results = data.get("results", [])
+                        # Check for exact name match
+                        has_exact_match = any(
+                            pkg.get("Name") == name for pkg in results
+                        )
+                        return not has_exact_match
+                except httpx.TimeoutException:
+                    continue
+                except httpx.RequestError:
                     continue
         return {"error": "Timeout"}
 
@@ -107,23 +132,24 @@ class AptChecker(BaseUnixChecker):
         for url in urls:
             async with httpx.AsyncClient() as client:
                 try:
-                    response = await client.get(url, headers=headers, timeout=10.0)
-                    if response.status_code == 404:
-                        return True  # 可用
-                    elif response.status_code == 200:
-                        # 校验返回内容是否为有效的 JSON 且包含包信息
+                    response = await client.get(
+                        url, headers=headers, timeout=DEFAULT_TIMEOUT
+                    )
+                    if response.status_code == 200:
+                        # Debian API returns 200 even for not found, but with error in JSON
                         try:
                             data = response.json()
-                            # 如果返回的是空列表或没有 versions 字段，通常意味着没找到
-                            return not (
-                                not data
-                                or "versions" not in data
-                                or not data["versions"]
-                            )
-                        except Exception:
-                            # 如果解析 JSON 失败（比如返回了 HTML 挑战页），视为查不到
+                            # Check if response contains error
+                            if "error" in data:
+                                return True  # Package not found, available
+                            # If has versions or is a valid package response
+                            return not ("versions" in data and bool(data["versions"]))
+                        except httpx.RequestError:
+                            # If JSON parsing fails, treat as error
                             return {"error": "Timeout"}
-                except Exception:
+                except httpx.TimeoutException:
+                    continue
+                except httpx.RequestError:
                     continue
         return {"error": "Timeout"}
 
@@ -138,18 +164,22 @@ class AlpineChecker(BaseUnixChecker):
         headers = {"User-Agent": "Nmck-Checker/1.0"}
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, headers=headers, timeout=10.0)
+                response = await client.get(
+                    url, headers=headers, timeout=DEFAULT_TIMEOUT
+                )
                 if response.status_code == 200:
                     soup = BeautifulSoup(response.text, "html.parser")
-                    # 查找是否有实际的包结果表格行
-                    # Alpine 的搜索结果在 <tbody> 中，如果没有包会显示 "No matching packages found"
+                    # Look for actual package result table rows
+                    # Alpine search results are in <tbody>, shows "No matching packages found" if no packages
                     if "No matching packages found" in response.text:
                         return True
-                    # 或者检查是否有指向具体包的链接
+                    # Or check for links to specific packages
                     package_links = soup.find_all(
                         "a", href=lambda h: h and "/package/" in h
                     )
                     return bool(not package_links)
                 return {"error": "Timeout"}
-            except Exception:
+            except httpx.TimeoutException:
+                return {"error": "Timeout"}
+            except httpx.RequestError:
                 return {"error": "Timeout"}

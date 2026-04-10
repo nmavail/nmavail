@@ -1,6 +1,6 @@
 import httpx
 
-from ..config import Config
+from ..config import DEFAULT_TIMEOUT, Config
 from .base import BaseChecker
 
 
@@ -18,17 +18,21 @@ class GitHubChecker(BaseChecker):
 
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, headers=headers, timeout=15.0)
+                response = await client.get(
+                    url, headers=headers, timeout=DEFAULT_TIMEOUT
+                )
                 if response.status_code == 404:
-                    return True  # 用户不存在，可用
+                    return True  # User doesn't exist, available
                 elif response.status_code == 200:
-                    return False  # 用户存在，已占用
+                    return False  # User exists, taken
                 elif response.status_code == 401:
                     return {"error": "Auth Failed"}
                 else:
                     return {"error": f"HTTP {response.status_code}"}
-            except Exception:
+            except httpx.TimeoutException:
                 return {"error": "Timeout"}
+            except httpx.RequestError as e:
+                return {"error": f"Network: {type(e).__name__}"}
 
 
 class GitHubRepoChecker(BaseChecker):
@@ -37,8 +41,8 @@ class GitHubRepoChecker(BaseChecker):
         return "GitHub (Repo Search)"
 
     async def check(self, name: str) -> dict:
-        """返回一个字典，包含 available 状态和 top_stars 数量"""
-        # 尝试精确匹配，如果不行则回退到普通搜索
+        """Return a dict with available status and top_stars count"""
+        # Try exact match first, fallback to general search
         url = f"https://api.github.com/search/repositories?q={name}+in:name&per_page=1&sort=stars&order=desc"
         headers = {"Accept": "application/vnd.github.v3+json"}
         token = Config().github_token
@@ -47,7 +51,9 @@ class GitHubRepoChecker(BaseChecker):
 
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, headers=headers, timeout=15.0)
+                response = await client.get(
+                    url, headers=headers, timeout=DEFAULT_TIMEOUT
+                )
                 if response.status_code == 200:
                     data = response.json()
                     total_count = data.get("total_count", 0)
@@ -65,5 +71,7 @@ class GitHubRepoChecker(BaseChecker):
                     return {"error": "Auth Failed"}
                 else:
                     return {"error": f"HTTP {response.status_code}"}
-            except Exception:
+            except httpx.TimeoutException:
                 return {"error": "Timeout"}
+            except httpx.RequestError as e:
+                return {"error": f"Network: {type(e).__name__}"}

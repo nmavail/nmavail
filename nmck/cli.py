@@ -32,7 +32,7 @@ def check(name):
 def help(ctx, subcommand):  # noqa: A001
     """Show help information"""
     if subcommand and subcommand in ctx.parent.command.commands:
-        # 显示特定子命令的帮助
+        # Show help for specific subcommand
         cmd = ctx.parent.command.commands[subcommand]
         args = " ".join(
             [
@@ -41,11 +41,11 @@ def help(ctx, subcommand):  # noqa: A001
                 if isinstance(a, click.Argument) and a.name
             ]
         )
-        click.echo(f"Usage: namok {subcommand} {args}")
+        click.echo(f"Usage: nmck {subcommand} {args}")
         click.echo()
         click.echo(f"  {cmd.help}")
     else:
-        # 显示主命令帮助
+        # Show main command help
         click.echo(ctx.parent.get_help())
 
 
@@ -54,7 +54,7 @@ def help(ctx, subcommand):  # noqa: A001
 @click.argument("value")
 def set_config(key, value):
     """Set a configuration value (e.g., github_token or gitlab_token). Required for full GitHub/GitLab functionality."""
-    # 去除 Token 两端的空格和换行符
+    # Remove leading/trailing whitespace and newlines from token
     config_manager.set(key, value.strip())
     click.echo(f"✅ Successfully set {key}")
 
