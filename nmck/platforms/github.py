@@ -1,6 +1,6 @@
 import httpx
 
-from ..config import DEFAULT_TIMEOUT, Config
+from ..config import DEFAULT_TIMEOUT
 from .base import BaseChecker
 
 
@@ -12,9 +12,6 @@ class GitHubChecker(BaseChecker):
     async def check(self, name: str) -> bool | dict:
         url = f"https://api.github.com/users/{name}"
         headers = {}
-        token = Config().github_token
-        if token:
-            headers["Authorization"] = f"token {token}"
 
         async with httpx.AsyncClient() as client:
             try:
@@ -45,9 +42,6 @@ class GitHubRepoChecker(BaseChecker):
         # Try exact match first, fallback to general search
         url = f"https://api.github.com/search/repositories?q={name}+in:name&per_page=1&sort=stars&order=desc"
         headers = {"Accept": "application/vnd.github.v3+json"}
-        token = Config().github_token
-        if token:
-            headers["Authorization"] = f"token {token}"
 
         async with httpx.AsyncClient() as client:
             try:

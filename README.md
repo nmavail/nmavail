@@ -7,11 +7,13 @@
 
 ## Features
 
-- **Domain Availability**: Checks popular TLDs (e.g., `.com`, `.io`, `.dev`, `.ai`) via WHOIS and DNS lookups.
-- **Developer Platforms**: Verifies username availability on GitHub and GitLab (including JiHu GitLab for better connectivity in China).
-- **Package Registries**: Checks if a name is available on PyPI, NPM, Crates.io, and Go Modules.
-- **Asynchronous & Fast**: Uses async I/O to perform checks in parallel, providing real-time streaming results.
-- **Clean CLI Interface**: Provides a beautiful, easy-to-read terminal output with loading animations.
+- **Domain Availability**: Checks popular TLDs (e.g., `.com`, `.io`, `.dev`, `.ai`) via WHOIS and DNS lookups
+- **Developer Platforms**: Verifies username availability on GitHub and GitLab
+- **Package Registries**: Checks if a name is available on PyPI, NPM, Crates.io, and Go Modules
+- **System Packages**: Checks Homebrew, AUR, Debian/Ubuntu, and Alpine Linux
+- **Asynchronous & Fast**: Uses async I/O to perform checks in parallel (~13 seconds total)
+- **Clean CLI Interface**: Provides a beautiful, easy-to-read terminal output with smooth loading animations
+- **No Configuration Required**: Works out of the box, no tokens or setup needed
 
 ## Installation
 
@@ -40,68 +42,58 @@ pip install .
 ### Check Name Availability
 To check a name across all supported platforms:
 ```bash
-nmck check my-awesome-name
+nmck my-awesome-name
 ```
 
 **Example Output:**
 ```
-Domains:
-    ✓   my-awesome-name.com   : Available
-    ✗   my-awesome-name.io    : Taken
+Package Registries:                                         
+    ✗   PyPI                : Taken
+    ✗   NPM                 : Taken
+    ✓   Crates.io           : Available
+    ✓   Go Modules          : Available
 
-GitHub:
-    ✓   User/Org              : Available
+System Packages:                                            
+    ✓   Homebrew            : Available
+    ✓   Arch (AUR)          : Available
+    ✓   Debian/Ubuntu       : Available
+    ✓   Alpine Linux        : Available
 
-Software & Packages:
-    ✓   PyPI                  : Available
-    ✗   NPM                   : Taken
+Developer Platforms:                                        
+  - GitHub:
+    ✗   User/Org            : Taken
+    ✗   Total Repos         : 9702854
+    ✗   Top Stars           : 25920 stars
+  - GitLab (list first 100 results only):
+    ✗   User/Group          : Taken
+    ✗   Total Repos         : 100+
+    ✗   Top Stars           : more than 0 stars
+
+Domains:                                                    
+    ✗   my-awesome-name.com : Taken
+    ✓   my-awesome-name.io  : Available
+    ✓   my-awesome-name.dev : Available
 ```
 
-### Configuration
+### Command Line Options
 
-**Important:** GitHub and GitLab have API rate limits. **Tokens are required for higher rate limits and complete functionality.**
-
-**Rate Limits:**
-- **GitHub (no token)**: 60 requests/hour, full functionality
-- **GitHub (with token)**: 5,000 requests/hour
-- **GitLab (no token)**: Limited API access, no `x-total` header in repo search
-- **GitLab (with token)**: Full API access with complete metadata
-
-**Set a Token:**
-
-**GitHub Token:**
-1. Go to [GitHub Settings > Developer settings > Personal access tokens > Fine-grained tokens](https://github.com/settings/tokens?type=beta)
-2. Click "Generate new token"
-3. Set expiration and name (e.g., `nmck-checker`)
-4. **Required permissions**:
-   - Repository permissions: **Contents** (Read-only) - for searching repositories
-   - Account permissions: **Email addresses** (Read-only) - for user verification
-5. Copy the token and run:
-   ```bash
-   nmck set github_token ghp_xxxxxxxxxxxx
-   ```
-
-**GitLab Token:**
-1. Go to [GitLab Settings > Access Tokens](https://gitlab.com/-/user_settings/personal_access_tokens)
-2. Click "Add new token"
-3. Set expiration date and name (e.g., `nmck-checker`)
-4. **Required scopes**:
-   - `read_api` - **Required** for API access (search repositories & users)
-   - `read_user` - Optional, for enhanced user verification
-5. Copy the token and run:
-   ```bash
-   nmck set gitlab_token glpat-xxxxxxxxxxxx
-   ```
-
-**Check Version:**
+**Show Version:**
 ```bash
 nmck --version
+nmck -V
 ```
 
-**Get Help:**
+**Show Help:**
 ```bash
 nmck --help
-nmck help check
+nmck -H
+```
+
+**Examples:**
+```bash
+nmck test
+nmck google
+nmck myproject
 ```
 
 ## Supported Platforms
@@ -109,8 +101,16 @@ nmck help check
 | Category | Platforms |
 | :--- | :--- |
 | **Domains** | `.com`, `.org`, `.net`, `.io`, `.co`, `.dev`, `.app`, `.xyz`, `.ai`, `.me`, `.cn`, `.tv`, `.ly`, `.it` |
-| **Code Hosting** | GitHub (User/Org & Repo Search), GitLab (User/Group & Repo Search) |
-| **Packages** | PyPI, NPM, Crates.io, Go Modules |
+| **Developer Platforms** | GitHub (User/Org & Repo Search), GitLab (User/Group & Repo Search) |
+| **Package Registries** | PyPI, NPM, Crates.io, Go Modules |
+| **System Packages** | Homebrew, Arch (AUR), Debian/Ubuntu, Alpine Linux |
+
+## Performance
+
+- **Total check time**: ~13 seconds (varies based on network conditions)
+- **Parallel execution**: All checks run concurrently
+- **Smart pagination**: GitLab limited to 1 page (100 results) for speed
+- **Optimized timeouts**: 10 second timeout per request
 
 ## Development
 

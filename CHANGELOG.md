@@ -5,6 +5,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-04-11
+
+### Breaking Changes
+- **Removed token configuration**: No more `nmck set` command or config files required
+- **Simplified CLI**: Changed from `nmck check <name>` to `nmck <name>`
+- **Removed GitLab JiHu support**: Now uses only GitLab.com
+
+### Added
+- Command-line options: `--version`/`-V` and `--help`/`-H`
+- System packages support: Homebrew, AUR, Debian/Ubuntu, Alpine Linux
+- Smart pagination for GitLab (100 results per page with `100+` indicator)
+- WHOIS retry mechanism for more reliable domain checks
+- Smooth loading animation without text jitter
+
+### Changed
+- **No configuration required**: Works out of the box, no tokens needed
+- **Unified timeout**: All requests use `DEFAULT_TIMEOUT = 10s`
+- **Improved error handling**: Distinguish between timeout and network errors
+- **GitLab output**: Shows "list first 100 results only" when results exceed 100
+- **Domain checking**: Uses WHOIS status field for accurate detection
+- **Performance**: Reduced query time from 40-60s to 11-15s
+
+### Fixed
+- Fixed `.ly` domain check logic (status field instead of domain_name)
+- Fixed AUR and Debian package check logic
+- Fixed GitLab pagination showing `+` for small result counts
+- Fixed bold formatting in numbers output
+- Fixed loading animation text jitter
+
+### Removed
+- Token configuration system (`~/.config/nmck/config.json`)
+- `nmck set` and `nmck check` subcommands
+- Environment variable support (no longer needed)
+- GitLab JiHu mirror support
+
+## [0.2.1] - 2026-04-10
+
+### Fixed
+- Fixed `.ly` domain check logic (use status field instead of domain_name)
+- Fixed AUR and Debian package check logic
+- Fixed old 'namok' references to 'nmck'
+- Fixed timeout error handling (distinguish Timeout vs Network errors)
+- Fixed bold formatting issue in numbers output
+
+### Changed
+- Unified timeout configuration (DEFAULT_TIMEOUT=10s)
+- GitLab pagination (list first 100 results only)
+- WHOIS retry mechanism for domain checks
+- Translated all Chinese comments to English
+- Added '- ' prefix for GitHub/GitLab sections
+- Better GitLab output (more than X stars)
+- Config file migration from ~/.config/namok to ~/.config/nmck
+
+### Performance
+- Reduced query time from 40-60s to 11-15s
+- GitLab query from 10-20s to 2-3s (1 page only)
+
 ## [0.2.0] - 2026-04-10
 
 ### Added

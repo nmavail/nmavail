@@ -1,6 +1,6 @@
 import httpx
 
-from ..config import DEFAULT_TIMEOUT, Config
+from ..config import DEFAULT_TIMEOUT
 from .base import BaseChecker
 
 
@@ -16,9 +16,6 @@ class GitLabChecker(BaseChecker):
         headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
-        token = Config().gitlab_token
-        if token:
-            headers["PRIVATE-TOKEN"] = token
 
         async with httpx.AsyncClient() as client:
             try:
@@ -51,9 +48,6 @@ class GitLabRepoChecker(BaseChecker):
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Accept": "application/json",
         }
-        token = Config().gitlab_token
-        if token:
-            headers["PRIVATE-TOKEN"] = token
 
         try:
             async with httpx.AsyncClient() as client:
@@ -83,7 +77,7 @@ class GitLabRepoChecker(BaseChecker):
 
                 # Check if there are more pages
                 next_page = response.headers.get("x-next-page")
-                has_more = next_page is not None
+                has_more = bool(next_page)  # Empty string means no more pages
 
                 # If there are more pages, indicate with "+" and ">="
                 if has_more:

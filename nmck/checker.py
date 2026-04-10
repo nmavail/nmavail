@@ -29,13 +29,13 @@ CHECKERS = [
 
 async def _loading_animation(stop_event: asyncio.Event, prefix="Checking"):
     """Loading spinner animation"""
-    chars = itertools.cycle(["⠋", "⠙", "⠹", "⠸", "⠼", "", "⠦", "⠧", "⠇", ""])
+    chars = itertools.cycle(["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
     while not stop_event.is_set():
         sys.stdout.write(f"\r{next(chars)} {prefix}...")
         sys.stdout.flush()
         await asyncio.sleep(0.1)
-        sys.stdout.write("\r" + " " * 60 + "\r")
-        sys.stdout.flush()
+    sys.stdout.write("\r" + " " * 60 + "\r")  # Clear line when done
+    sys.stdout.flush()
 
 
 async def check_name(name: str):

@@ -48,9 +48,7 @@ class DomainChecker(BaseChecker):
                 # Check if domain exists by verifying status field
                 # Most TLDs return status for existing domains, None/empty for non-existing
                 # .ly specifically returns domain_name even for non-existing, but status is None
-                if w.status:
-                    return False  # Domain has status, exists and taken
-                return True  # No status means domain doesn't exist
+                return not bool(w.status)
             except Exception:
                 if attempt == 0:
                     await asyncio.sleep(0.5)  # Wait before retry
