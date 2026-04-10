@@ -17,24 +17,45 @@
 
 ## Installation
 
-### Option 1: Install via pip (Recommended)
-The easiest way to install Nmck is via pip:
+### Option 1: Install via uv (Recommended)
+The easiest and recommended way to install Nmck is using [uv](https://github.com/astral-sh/uv):
 ```bash
-pip install nmck
-```
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-### Option 2: Install via uv
-If you prefer using [uv](https://github.com/astral-sh/uv):
-```bash
+# Install nmck (uv will automatically manage Python environment)
 uv tool install nmck
+
+# Verify installation
+nmck --version
 ```
 
-### Option 3: Install from Source
+### Option 2: Install via pipx
+Alternatively, you can use [pipx](https://github.com/pypa/pipx):
+```bash
+# Install pipx (if not already installed)
+pip install pipx
+
+# Install nmck (pipx will create an isolated environment)
+pipx install nmck
+
+# Verify installation
+nmck --version
+```
+
+### Option 3: Run without installation
+Try Nmck without installing:
+```bash
+uvx nmck test
+```
+
+### Option 4: Install from Source
 For developers or those who want the latest unreleased features:
 ```bash
 git clone https://github.com/cphotor/nmck.git
 cd nmck
-pip install .
+uv sync  # or: pip install -e .
+uv run nmck test
 ```
 
 ## Usage
