@@ -146,7 +146,7 @@ def _print_group(title, results, name=""):
             console.print("  GitLab:")
             for checker, result in gl_results:
                 if "Repo Search" in checker.name:
-                    _print_github_repo_lines(checker, result, indent=4, is_gitlab=True)
+                    _print_github_repo_lines(checker, result, indent=4)
                 else:
                     _print_status_line(checker, result, indent=4, name=name)
     else:
@@ -159,7 +159,7 @@ def _print_group(title, results, name=""):
     console.print()  # 空行分隔
 
 
-def _print_github_repo_lines(_checker, result, indent=0, *, _is_gitlab=False):
+def _print_github_repo_lines(_checker, result, indent=0):
     """打印 GitHub/GitLab Repo Search 的两行信息"""
     prefix = " " * indent
     # Repo Search 的三行与 User/Org 对齐

@@ -29,6 +29,7 @@ dependencies = [
     "dnspython",
     "rich",
     "python-dotenv",
+    "beautifulsoup4>=4.14.3",
 ]
 
 [build-system]
@@ -37,6 +38,10 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 nmck = "nmck.cli:cli"
+
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple/"
+default = true
 
 [tool.ruff]
 line-length = 88
@@ -56,5 +61,5 @@ indent-style = "space"
 # VS Code/Windsurf Python environment configuration
 [tool.vscode]
 python.terminal.activateEnvironment = true
-python.workspaceSearchPaths = ["./**/.venv"]
 python.terminal.autoActivationType = "shellStartup"
+python.workspaceSearchPaths = ["./**/.venv"]
