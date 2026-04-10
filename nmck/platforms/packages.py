@@ -24,7 +24,7 @@ class PackageChecker(BaseChecker):
                 else:
                     return {"error": f"HTTP {response.status_code}"}
             except Exception:
-                return {"error": "Timeout/NetErr"}
+                return {"error": "Timeout"}
 
 
 # 预定义的检查器实例

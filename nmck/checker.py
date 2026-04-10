@@ -7,8 +7,9 @@ from rich.console import Console
 
 from .platforms.domains import POPULAR_TLDS, DomainChecker
 from .platforms.github import GitHubChecker, GitHubRepoChecker
-from .platforms.gitlab import GitLabChecker
+from .platforms.gitlab import GitLabChecker, GitLabRepoChecker
 from .platforms.packages import CRATES_CHECKER, GO_CHECKER, NPM_CHECKER, PYPI_CHECKER
+from .platforms.unix import AlpineChecker, AptChecker, AurChecker, HomebrewChecker
 
 console = Console()
 
@@ -51,14 +52,15 @@ async def check_name(name: str):
         return list(zip(checkers_list, results))
 
     domain_task = asyncio.create_task(run_group(domain_checkers, "Domains"))
-    github_task = asyncio.create_task(run_group([GitHubChecker(), GitHubRepoChecker()], "GitHub"))
-    other_task = asyncio.create_task(run_group([GitLabChecker(), PYPI_CHECKER, NPM_CHECKER, CRATES_CHECKER, GO_CHECKER], "Software & Packages"))
+    github_task = asyncio.create_task(run_group([GitHubChecker(), GitHubRepoChecker(), GitLabChecker(), GitLabRepoChecker()], "Developer Platforms"))
+    package_task = asyncio.create_task(run_group([PYPI_CHECKER, NPM_CHECKER, CRATES_CHECKER, GO_CHECKER], "Package Registries"))
+    system_task = asyncio.create_task(run_group([HomebrewChecker(), AurChecker(), AptChecker(), AlpineChecker()], "System Packages"))
 
     completed_count = 0
-    total_count = 3
+    total_count = 4
 
     # 使用 asyncio.as_completed 按完成顺序处理
-    for completed_task in asyncio.as_completed([domain_task, github_task, other_task]):
+    for completed_task in asyncio.as_completed([domain_task, github_task, package_task, system_task]):
         results = await completed_task
         
         # 清除跑马灯
@@ -69,9 +71,11 @@ async def check_name(name: str):
         if results and "Domain" in results[0][0].name:
             _print_group("Domains", results, name)
         elif results and "GitHub" in results[0][0].name:
-            _print_group("GitHub", results, name)
+            _print_group("Developer Platforms", results, name)
+        elif results and results[0][0].name in ["PyPI", "NPM", "Crates.io", "Go Modules"]:
+            _print_group("Package Registries", results, name)
         else:
-            _print_group("Software & Packages", results, name)
+            _print_group("System Packages", results, name)
         
         completed_count += 1
         # 如果还有未完成的，重新启动跑马灯
@@ -83,23 +87,52 @@ async def check_name(name: str):
 
 def _print_group(title, results, name=""):
     console.print(f"[bold]{title}:[/bold]")
-    for checker, result in results:
-        if "Repo Search" in checker.name:
-            _print_github_repo_lines(checker, result, indent=4)
-        else:
-            _print_status_line(checker, result, indent=4, name=name)
+    
+    # 如果是 Developer Platforms，我们手动分组打印以保持整洁
+    if title == "Developer Platforms":
+        from .platforms.github import GitHubChecker, GitHubRepoChecker
+        from .platforms.gitlab import GitLabChecker, GitLabRepoChecker
+
+        gh_results = [(c, r) for c, r in results if isinstance(c, (GitHubChecker, GitHubRepoChecker))]
+        gl_results = [(c, r) for c, r in results if isinstance(c, (GitLabChecker, GitLabRepoChecker))]
+        
+        if gh_results:
+            console.print("  GitHub:")
+            for checker, result in gh_results:
+                if "Repo Search" in checker.name:
+                    _print_github_repo_lines(checker, result, indent=4)
+                else:
+                    _print_status_line(checker, result, indent=4, name=name)
+        
+        if gl_results:
+            console.print("  GitLab:")
+            for checker, result in gl_results:
+                if "Repo Search" in checker.name:
+                    _print_github_repo_lines(checker, result, indent=4, is_gitlab=True)
+                else:
+                    _print_status_line(checker, result, indent=4, name=name)
+    else:
+        for checker, result in results:
+            if "Repo Search" in checker.name:
+                _print_github_repo_lines(checker, result, indent=4)
+            else:
+                _print_status_line(checker, result, indent=4, name=name)
+    
     console.print()  # 空行分隔
 
 
-def _print_github_repo_lines(checker, result, indent=0):
-    """打印 GitHub Repo Search 的两行信息"""
+def _print_github_repo_lines(checker, result, indent=0, is_gitlab=False):
+    """打印 GitHub/GitLab Repo Search 的两行信息"""
     prefix = " " * indent
+    # Repo Search 的三行与 User/Org 对齐
+    width = 18
+    
     if isinstance(result, dict) and "error" in result:
         # 错误情况
         color = "yellow"
         status_str = result['error']
         icon = "!  "
-        console.print(f"[{color}]{prefix}{icon} {'Repo Search':<18}  : {status_str}[/{color}]")
+        console.print(f"[{color}]{prefix}{icon} {'Repo Search':<{width}}  : {status_str}[/{color}]")
     elif isinstance(result, dict):
         stars_info = result.get("top_stars")
         total_count = result.get("total_count", 0)
@@ -108,15 +141,17 @@ def _print_github_repo_lines(checker, result, indent=0):
             # 无重名
             color = "green"
             icon = "✓  "
-            console.print(f"[{color}]{prefix}{icon} {'Total Repos':<18}  : None[/{color}]")
+            console.print(f"[{color}]{prefix}{icon} {'Total Repos':<{width}}  : None[/{color}]")
         else:
             # 有重名
             color = "red"
             icon = "✗  "
             star_word = "star" if stars_info == 1 else "stars"
-            console.print(f"[{color}]{prefix}{icon} {'Total Repos':<18}  : {total_count}[/{color}]")
-            # 第二行：与第一行对齐，前面也用相同宽度的占位符
-            console.print(f"[{color}]{prefix}{icon} {'Top Stars':<18}  : {stars_info} {star_word}[/{color}]")
+            # 显示仓库总数
+            count_display = total_count
+            console.print(f"[{color}]{prefix}{icon} {'Total Repos':<{width}}  : {count_display}[/{color}]")
+            # 第二行：与第一行对齐
+            console.print(f"[{color}]{prefix}{icon} {'Top Stars':<{width}}  : {stars_info} {star_word}[/{color}]")
 
 def _print_status_line(checker, result, indent=0, is_gh_repo=False, name=""):
     """统一处理单行状态的打印逻辑"""
@@ -173,7 +208,11 @@ def _print_status_line(checker, result, indent=0, is_gh_repo=False, name=""):
             display_name = f".{tld}"
         else:
             display_name = full_domain
+    elif "Repology" in display_name and isinstance(result, dict) and not result.get("available", True):
+        # Unix/Linux 检查：显示占用的仓库数量
+        repo_count = result.get("repo_count", 0)
+        status_str = f"Taken ({repo_count} repos)"
         
-    width = 18 if indent > 0 else 22
+    width = 18 if indent <= 4 else 14
     # 整行统一颜色
     console.print(f"[{color}]{prefix}{icon} {display_name:<{width}}  : {status_str}[/{color}]")

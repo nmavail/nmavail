@@ -57,12 +57,43 @@ Software & Packages:
 ```
 
 ### Configuration
+
+**Important:** GitHub and GitLab have strict API rate limits. **To get complete search results (including repo search with exact total counts), you must configure API tokens.** Without tokens, some features will be limited or return incomplete data.
+
 Namok allows you to set authentication tokens to increase API rate limits and avoid blocks.
 
 **Set a Token:**
+
+**GitHub Token:**
+1. Go to [GitHub Settings > Developer settings > Personal access tokens > Fine-grained tokens](https://github.com/settings/tokens?type=beta)
+2. Click "Generate new token"
+3. Set expiration and name (e.g., `nmck-checker`)
+4. **Required permissions**:
+   - Repository permissions: **Contents** (Read-only) - for searching repositories
+   - Account permissions: **Email addresses** (Read-only) - for user verification
+5. Copy the token and run:
+   ```bash
+   nmck set github_token ghp_xxxxxxxxxxxx
+   ```
+
+**GitLab Token:**
+1. Go to [GitLab Settings > Access Tokens](https://gitlab.com/-/user_settings/personal_access_tokens) (or JiHu GitLab equivalent)
+2. Click "Add new token"
+3. Set expiration date and name (e.g., `nmck-checker`)
+4. **Required scopes**:
+   - `read_api` - **Required** for API access (search repositories & users)
+   - `read_user` - Optional, for user verification
+5. Copy the token and run:
+   ```bash
+   nmck set gitlab_token glpat-xxxxxxxxxxxx
+   ```
+
+> **Note:** GitLab.com may restrict access from certain regions. If you're in mainland China, the tool will automatically use JiHu GitLab (jihulab.com) when no token is configured.
+
+**Using Environment Variables (Alternative):**
 ```bash
-nmck set github_token ghp_xxxxxxxxxxxx
-nmck set gitlab_token glpat-xxxxxxxxxxxx
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+export GITLAB_TOKEN=glpat-xxxxxxxxxxxx
 ```
 
 **Check Version:**
@@ -81,7 +112,7 @@ nmck help check
 | Category | Platforms |
 | :--- | :--- |
 | **Domains** | `.com`, `.org`, `.net`, `.io`, `.co`, `.dev`, `.app`, `.xyz`, `.ai`, `.me`, `.cn`, `.tv`, `.ly`, `.it` |
-| **Code Hosting** | GitHub (User/Org & Repo Search), GitLab.com, JiHu GitLab |
+| **Code Hosting** | GitHub (User/Org & Repo Search), GitLab (User/Group & Repo Search) |
 | **Packages** | PyPI, NPM, Crates.io, Go Modules |
 
 ## Development

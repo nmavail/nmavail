@@ -22,7 +22,7 @@ def cli(ctx, version):
 @cli.command()
 @click.argument("name")
 def check(name):
-    """Check the availability of a name"""
+    """Check the availability of a name. Note: GitHub/GitLab tokens are required for complete repo search results."""
     asyncio.run(check_name(name))
 
 
@@ -47,7 +47,7 @@ def help(ctx, subcommand):
 @click.argument("key")
 @click.argument("value")
 def set_config(key, value):
-    """Set a configuration value, e.g.: namok set github_token <your_token>"""
+    """Set a configuration value (e.g., github_token or gitlab_token). Required for full GitHub/GitLab functionality."""
     # 去除 Token 两端的空格和换行符
     config_manager.set(key, value.strip())
     click.echo(f"✅ Successfully set {key}")

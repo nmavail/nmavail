@@ -28,7 +28,7 @@ class GitHubChecker(BaseChecker):
                 else:
                     return {"error": f"HTTP {response.status_code}"}
             except Exception:
-                return {"error": "Timeout/NetErr"}
+                return {"error": "Timeout"}
 
 
 class GitHubRepoChecker(BaseChecker):
@@ -66,4 +66,4 @@ class GitHubRepoChecker(BaseChecker):
                 else:
                     return {"error": f"HTTP {response.status_code}"}
             except Exception:
-                return {"error": "Timeout/NetErr"}
+                return {"error": "Timeout"}
