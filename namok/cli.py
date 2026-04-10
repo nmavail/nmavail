@@ -33,7 +33,11 @@ def help(ctx, subcommand):
     """Show help information"""
     if subcommand and subcommand in ctx.parent.command.commands:
         # 显示特定子命令的帮助
-        click.echo(ctx.parent.command.commands[subcommand].get_help(ctx.parent))
+        cmd = ctx.parent.command.commands[subcommand]
+        args = ' '.join([a.name.upper() for a in cmd.params if isinstance(a, click.Argument) and a.name])
+        click.echo(f"Usage: namok {subcommand} {args}")
+        click.echo()
+        click.echo(f"  {cmd.help}")
     else:
         # 显示主命令帮助
         click.echo(ctx.parent.get_help())
