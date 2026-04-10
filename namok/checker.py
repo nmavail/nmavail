@@ -1,4 +1,7 @@
 import asyncio
+import itertools
+import sys
+import time
 
 from rich.console import Console
 
@@ -23,71 +26,55 @@ CHECKERS = [
     GO_CHECKER,
 ]
 
+async def _loading_animation(stop_event: asyncio.Event):
+    """简单的跑马灯动画"""
+    chars = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '', '⠴', '⠦', '⠧', '', '⠏'])
+    while not stop_event.is_set():
+        sys.stdout.write(f'\r{next(chars)} Checking...')
+        sys.stdout.flush()
+        await asyncio.sleep(0.1)
+    # 清除动画行：回到行首，打印足够多的空格覆盖，再回到行首
+    sys.stdout.write('\r' + ' ' * 60 + '\r')
+    sys.stdout.flush()
 
 async def check_name(name: str):
-    console.print(f"\n[bold blue]Checking availability for: {name}[/bold blue]\n")
-    tasks = [checker.check(name) for checker in CHECKERS]
-    results = await asyncio.gather(*tasks)
+    # 定义分组任务
+    async def run_group(checkers_list, group_name):
+        tasks = [checker.check(name) for checker in checkers_list]
+        results = await asyncio.gather(*tasks)
+        return list(zip(checkers_list, results))
 
-    table_available = []
-    table_taken = []
+    domain_task = asyncio.create_task(run_group(domain_checkers, "Domains"))
+    github_task = asyncio.create_task(run_group([GitHubChecker(), GitHubRepoChecker()], "GitHub"))
+    other_task = asyncio.create_task(run_group([GitLabChecker(), PYPI_CHECKER, NPM_CHECKER, CRATES_CHECKER, GO_CHECKER], "Software & Packages"))
 
-    # 分组显示：域名、GitHub、其他
-    domain_results = []
-    github_results = []
-    other_results = []
-
-    for checker, result in zip(CHECKERS, results):
-        # 统一提取状态
-        is_available = False
-        is_error = False
-        error_msg = ""
-
-        if isinstance(result, dict):
-            if "error" in result:
-                is_error = True
-                error_msg = result["error"]
-            else:
-                is_available = result.get("available", False)
+    # 使用 asyncio.as_completed 按完成顺序处理
+    for completed_task in asyncio.as_completed([domain_task, github_task, other_task]):
+        results = await completed_task
+        # 判断属于哪个分组
+        if results and "Domain" in results[0][0].name:
+            _print_group("Domains", results, name)
+        elif results and "GitHub" in results[0][0].name:
+            _print_group("GitHub", results, name)
         else:
-            is_available = bool(result)
+            _print_group("Software & Packages", results, name)
+        # 打印完一个分类后，在下方继续显示跑马灯
+        sys.stdout.write('\r⠋ Checking remaining...')
+        sys.stdout.flush()
+    
+    # 全部完成后清除跑马灯
+    sys.stdout.write('\r' + ' ' * 60 + '\r')
+    sys.stdout.flush()
+    console.print()
 
-        if "Domain" in checker.name:
-            domain_results.append((checker, result))
-        elif "GitHub" in checker.name:
-            github_results.append((checker, result))
+def _print_group(title, results, name=""):
+    console.print(f"[bold]{title}:[/bold]")
+    for checker, result in results:
+        if "Repo Search" in checker.name:
+            _print_github_repo_lines(checker, result, indent=4)
         else:
-            other_results.append((checker, result))
-
-        if not is_error:
-            if is_available:
-                table_available.append(checker.name)
-            else:
-                table_taken.append(checker.name)
-
-    # 输出域名部分（带缩进）
-    if domain_results:
-        console.print("[bold]Domains:[/bold]")
-        for checker, result in domain_results:
             _print_status_line(checker, result, indent=4, name=name)
-        console.print()  # 空行分隔
-
-    # 输出 GitHub 部分（带缩进）
-    if github_results:
-        console.print("[bold]GitHub:[/bold]")
-        for checker, result in github_results:
-            if "Repo Search" in checker.name:
-                _print_github_repo_lines(checker, result, indent=4)
-            else:
-                _print_status_line(checker, result, indent=4)
-        console.print()  # 空行分隔
-
-    # 输出其他平台部分
-    if other_results:
-        console.print("[bold]Other Platforms & Packages:[/bold]")
-        for checker, result in other_results:
-            _print_status_line(checker, result, indent=4)
-        console.print()
+    console.print()  # 空行分隔
 
 
 def _print_github_repo_lines(checker, result, indent=0):
