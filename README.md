@@ -15,26 +15,24 @@
 
 ## Installation
 
-### Prerequisites
-- Python 3.10 or higher
-- [uv](https://github.com/astral-sh/uv) (recommended)
-
-### Option 1: Install via uv (Recommended)
-```bash
-# Clone the repository
-git clone https://github.com/your-username/nmck.git
-cd nmck
-
-# Install as a global tool
-uv tool install .
-
-# Now you can use it directly
-nmck --version
-```
-
-### Option 2: Install via pip
+### Option 1: Install via pip (Recommended)
+The easiest way to install Nmck is via pip:
 ```bash
 pip install nmck
+```
+
+### Option 2: Install via uv
+If you prefer using [uv](https://github.com/astral-sh/uv):
+```bash
+uv tool install nmck
+```
+
+### Option 3: Install from Source
+For developers or those who want the latest unreleased features:
+```bash
+git clone https://github.com/cphotor/nmck.git
+cd nmck
+pip install .
 ```
 
 ## Usage
