@@ -12,7 +12,7 @@ class GitHubChecker(BaseChecker):
     async def check(self, name: str) -> bool | dict:
         url = f"https://api.github.com/users/{name}"
         headers = {}
-        token = Config().GITHUB_TOKEN
+        token = Config().github_token
         if token:
             headers["Authorization"] = f"token {token}"
 
@@ -41,7 +41,7 @@ class GitHubRepoChecker(BaseChecker):
         # 尝试精确匹配，如果不行则回退到普通搜索
         url = f"https://api.github.com/search/repositories?q={name}+in:name&per_page=1&sort=stars&order=desc"
         headers = {"Accept": "application/vnd.github.v3+json"}
-        token = Config().GITHUB_TOKEN
+        token = Config().github_token
         if token:
             headers["Authorization"] = f"token {token}"
 

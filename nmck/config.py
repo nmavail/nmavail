@@ -19,7 +19,7 @@ class ConfigManager:
     def _load(self):
         if self.config_file.exists():
             try:
-                with open(self.config_file) as f:
+                with self.config_file.open() as f:
                     return json.load(f)
             except Exception:
                 return {}
@@ -27,7 +27,7 @@ class ConfigManager:
 
     def save(self):
         self.config_dir.mkdir(parents=True, exist_ok=True)
-        with open(self.config_file, "w") as f:
+        with self.config_file.open("w") as f:
             json.dump(self.data, f, indent=2)
 
     def get(self, key, default=None):
@@ -48,7 +48,7 @@ config_manager = ConfigManager()
 
 class Config:
     @property
-    def GITHUB_TOKEN(self):
+    def github_token(self):
         # 优先从环境变量获取，如果没有则尝试从配置管理器获取
         env_val = os.getenv("GITHUB_TOKEN")
         if env_val:
@@ -56,7 +56,7 @@ class Config:
         return config_manager.get("github_token")
 
     @property
-    def GITLAB_TOKEN(self):
+    def gitlab_token(self):
         env_val = os.getenv("GITLAB_TOKEN")
         if env_val:
             return env_val

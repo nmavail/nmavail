@@ -29,12 +29,18 @@ def check(name):
 @cli.command()
 @click.argument("subcommand", required=False)
 @click.pass_context
-def help(ctx, subcommand):
+def help(ctx, subcommand):  # noqa: A001
     """Show help information"""
     if subcommand and subcommand in ctx.parent.command.commands:
         # 显示特定子命令的帮助
         cmd = ctx.parent.command.commands[subcommand]
-        args = ' '.join([a.name.upper() for a in cmd.params if isinstance(a, click.Argument) and a.name])
+        args = " ".join(
+            [
+                a.name.upper()
+                for a in cmd.params
+                if isinstance(a, click.Argument) and a.name
+            ]
+        )
         click.echo(f"Usage: namok {subcommand} {args}")
         click.echo()
         click.echo(f"  {cmd.help}")
