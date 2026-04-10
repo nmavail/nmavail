@@ -16,7 +16,7 @@ class PackageChecker(BaseChecker):
         url = self._url_template.format(name=name)
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, timeout=10.0)
+                response = await client.get(url, timeout=15.0)
                 if response.status_code == 404:
                     return True
                 elif response.status_code == 200:

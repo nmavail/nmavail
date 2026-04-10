@@ -26,7 +26,7 @@ class GitLabChecker(BaseChecker):
         for platform_name, url in targets:
             async with httpx.AsyncClient() as client:
                 try:
-                    response = await client.get(url, headers=headers, timeout=5.0)
+                    response = await client.get(url, headers=headers, timeout=8.0)
                     if response.status_code == 200:
                         return len(response.json()) == 0
                     elif response.status_code == 403:

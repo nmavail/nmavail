@@ -11,9 +11,9 @@ from .config import config_manager
 @click.option("--version", is_flag=True, help="Show version and exit")
 @click.pass_context
 def cli(ctx, version):
-    """Namok: Cross-domain name availability checker"""
+    """Nmck: Cross-domain name availability checker"""
     if version:
-        click.echo(f"namok version {importlib.metadata.version('namok')}")
+        click.echo(f"nmck version {importlib.metadata.version('nmck')}")
         ctx.exit()
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())

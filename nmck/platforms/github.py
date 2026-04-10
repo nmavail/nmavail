@@ -18,7 +18,7 @@ class GitHubChecker(BaseChecker):
 
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, headers=headers, timeout=10.0)
+                response = await client.get(url, headers=headers, timeout=15.0)
                 if response.status_code == 404:
                     return True  # 用户不存在，可用
                 elif response.status_code == 200:
@@ -47,7 +47,7 @@ class GitHubRepoChecker(BaseChecker):
 
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, headers=headers, timeout=10.0)
+                response = await client.get(url, headers=headers, timeout=15.0)
                 if response.status_code == 200:
                     data = response.json()
                     total_count = data.get("total_count", 0)
