@@ -26,18 +26,24 @@ CHECKERS = [
     GO_CHECKER,
 ]
 
-async def _loading_animation(stop_event: asyncio.Event):
-    """简单的跑马灯动画"""
-    chars = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '', '⠴', '⠦', '⠧', '', '⠏'])
+async def _loading_animation(stop_event: asyncio.Event, prefix="Checking"):
+    """跑马灯动画"""
+    chars = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '⠼', '', '⠦', '⠧', '⠇', ''])
     while not stop_event.is_set():
-        sys.stdout.write(f'\r{next(chars)} Checking...')
+        sys.stdout.write(f'\r{next(chars)} {prefix}...')
         sys.stdout.flush()
         await asyncio.sleep(0.1)
-    # 清除动画行：回到行首，打印足够多的空格覆盖，再回到行首
+    # 清除动画行
     sys.stdout.write('\r' + ' ' * 60 + '\r')
     sys.stdout.flush()
 
 async def check_name(name: str):
+    console.print()  # 先空一行
+    
+    # 启动跑马灯
+    stop_event = asyncio.Event()
+    loading_task = asyncio.create_task(_loading_animation(stop_event, "Checking"))
+    
     # 定义分组任务
     async def run_group(checkers_list, group_name):
         tasks = [checker.check(name) for checker in checkers_list]
@@ -48,9 +54,17 @@ async def check_name(name: str):
     github_task = asyncio.create_task(run_group([GitHubChecker(), GitHubRepoChecker()], "GitHub"))
     other_task = asyncio.create_task(run_group([GitLabChecker(), PYPI_CHECKER, NPM_CHECKER, CRATES_CHECKER, GO_CHECKER], "Software & Packages"))
 
+    completed_count = 0
+    total_count = 3
+
     # 使用 asyncio.as_completed 按完成顺序处理
     for completed_task in asyncio.as_completed([domain_task, github_task, other_task]):
         results = await completed_task
+        
+        # 清除跑马灯
+        stop_event.set()
+        await loading_task
+        
         # 判断属于哪个分组
         if results and "Domain" in results[0][0].name:
             _print_group("Domains", results, name)
@@ -58,13 +72,13 @@ async def check_name(name: str):
             _print_group("GitHub", results, name)
         else:
             _print_group("Software & Packages", results, name)
-        # 打印完一个分类后，在下方继续显示跑马灯
-        sys.stdout.write('\r⠋ Checking remaining...')
-        sys.stdout.flush()
+        
+        completed_count += 1
+        # 如果还有未完成的，重新启动跑马灯
+        if completed_count < total_count:
+            stop_event.clear()
+            loading_task = asyncio.create_task(_loading_animation(stop_event, "Checking remaining"))
     
-    # 全部完成后清除跑马灯
-    sys.stdout.write('\r' + ' ' * 60 + '\r')
-    sys.stdout.flush()
     console.print()
 
 def _print_group(title, results, name=""):
