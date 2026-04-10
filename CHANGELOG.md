@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-04-11
+
+### Fixed
+- Fixed `--help` parameter conflict with Click's built-in handler
+- Removed manual `--help` option definition (Click handles it automatically)
+- Cleaned up duplicate `if __name__ == "__main__"` block
+
+### Changed
+- Documentation: Updated installation guide to recommend uv tool and pipx
+- Documentation: Removed direct pip install recommendation (avoids system Python issues)
+- Documentation: Clarified that uv/pipx automatically manage Python environment
+
 ## [0.3.0] - 2026-04-11
 
 ### Breaking Changes
