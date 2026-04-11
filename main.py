@@ -1,4 +1,4 @@
-from nmck.cli import cli
+from nmavail.cli import cli
 
 if __name__ == "__main__":
     cli()

@@ -1,12 +1,12 @@
 [project]
-name = "nmck"
-version = "0.3.1"
+name = "nmavail"
+version = "0.4.0"
 description = "A powerful CLI tool to check name availability across domains and platforms"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
 authors = [
-    {name = "Nmck Contributors"}
+    {name = "Nmavail Contributors"}
 ]
 keywords = ["cli", "domain", "availability", "github", "gitlab", "pypi", "npm"]
 classifiers = [
@@ -33,16 +33,16 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/cphotor/nmck"
-Repository = "https://github.com/cphotor/nmck"
-"Bug Tracker" = "https://github.com/cphotor/nmck/issues"
+Homepage = "https://github.com/nmavail/nmavail"
+Repository = "https://github.com/nmavail/nmavail"
+"Bug Tracker" = "https://github.com/nmavail/nmavail/issues"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
-nmck = "nmck.cli:cli"
+nmavail = "nmavail.cli:cli"
 
 [[tool.uv.index]]
 url = "https://mirrors.aliyun.com/pypi/simple/"

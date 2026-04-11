@@ -1,9 +1,9 @@
-# Nmck
+# Nmavail
 
-[![PyPI version](https://badge.fury.io/py/nmck.svg)](https://badge.fury.io/py/nmck)
+[![PyPI version](https://badge.fury.io/py/nmavail.svg)](https://badge.fury.io/py/nmavail)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Nmck** is a powerful command-line tool designed to check the availability of names across multiple domains and platforms. Whether you are naming a startup, a new project, or an open-source library, Nmck helps you secure your brand identity by verifying if a name is already taken.
+**Nmavail** is a powerful command-line tool designed to check the availability of names across multiple domains and platforms. Whether you are naming a startup, a new project, or an open-source library, Nmavail helps you secure your brand identity by verifying if a name is already taken.
 
 ## Features
 
@@ -18,16 +18,16 @@
 ## Installation
 
 ### Option 1: Install via uv (Recommended)
-The easiest and recommended way to install Nmck is using [uv](https://github.com/astral-sh/uv):
+The easiest and recommended way to install Nmavail is using [uv](https://github.com/astral-sh/uv):
 ```bash
 # Install uv (if not already installed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install nmck (uv will automatically manage Python environment)
-uv tool install nmck
+# Install nmavail (uv will automatically manage Python environment)
+uv tool install nmavail
 
 # Verify installation
-nmck --version
+nmavail --version
 ```
 
 ### Option 2: Install via pipx
@@ -36,26 +36,26 @@ Alternatively, you can use [pipx](https://github.com/pypa/pipx):
 # Install pipx (if not already installed)
 pip install pipx
 
-# Install nmck (pipx will create an isolated environment)
-pipx install nmck
+# Install nmavail (pipx will create an isolated environment)
+pipx install nmavail
 
 # Verify installation
-nmck --version
+nmavail --version
 ```
 
 ### Option 3: Run without installation
-Try Nmck without installing:
+Try Nmavail without installing:
 ```bash
-uvx nmck test
+uvx nmavail test
 ```
 
 ### Option 4: Install from Source
 For developers or those who want the latest unreleased features:
 ```bash
-git clone https://github.com/cphotor/nmck.git
-cd nmck
+git clone https://github.com/nmavail/nmavail.git
+cd nmavail
 uv sync  # or: pip install -e .
-uv run nmck test
+uv run nmavail test
 ```
 
 ## Usage
@@ -63,7 +63,7 @@ uv run nmck test
 ### Check Name Availability
 To check a name across all supported platforms:
 ```bash
-nmck my-awesome-name
+nmavail my-awesome-name
 ```
 
 **Example Output:**
@@ -100,21 +100,21 @@ Domains:
 
 **Show Version:**
 ```bash
-nmck --version
-nmck -V
+nmavail --version
+nmavail -V
 ```
 
 **Show Help:**
 ```bash
-nmck --help
-nmck -H
+nmavail --help
+nmavail -H
 ```
 
 **Examples:**
 ```bash
-nmck test
-nmck google
-nmck myproject
+nmavail test
+nmavail google
+nmavail myproject
 ```
 
 ## Supported Platforms

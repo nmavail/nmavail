@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-04-11
+
+### Changed
+- **Project renamed**: Changed from `nmck` to `nmavail` for better brand identity
+- **Installation**: Updated documentation to recommend `uv tool install` as primary method
+- **Documentation**: All references updated from `nmck` to `nmavail`
+
+### Breaking Changes
+- Command name changed from `nmck` to `nmavail`
+- Package name changed from `nmck` to `nmavail`
+- Migration required: users must reinstall as `nmavail`
+
 ## [0.3.1] - 2026-04-11
 
 ### Fixed
@@ -20,8 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2026-04-11
 
 ### Breaking Changes
-- **Removed token configuration**: No more `nmck set` command or config files required
-- **Simplified CLI**: Changed from `nmck check <name>` to `nmck <name>`
+- **Removed token configuration**: No more `nmavail set` command or config files required
+- **Simplified CLI**: Changed from `nmavail check <name>` to `nmavail <name>`
 - **Removed GitLab JiHu support**: Now uses only GitLab.com
 
 ### Added
@@ -47,8 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed loading animation text jitter
 
 ### Removed
-- Token configuration system (`~/.config/nmck/config.json`)
-- `nmck set` and `nmck check` subcommands
+- Token configuration system (`~/.config/nmavail/config.json`)
+- `nmavail set` and `nmavail check` subcommands
 - Environment variable support (no longer needed)
 - GitLab JiHu mirror support
 
@@ -68,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Translated all Chinese comments to English
 - Added '- ' prefix for GitHub/GitLab sections
 - Better GitLab output (more than X stars)
-- Config file migration from ~/.config/namok to ~/.config/nmck
+
 
 ### Performance
 - Reduced query time from 40-60s to 11-15s

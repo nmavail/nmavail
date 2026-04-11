@@ -148,8 +148,8 @@ wheels = [
 ]
 
 [[package]]
-name = "nmck"
-version = "0.3.0"
+name = "nmavail"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },

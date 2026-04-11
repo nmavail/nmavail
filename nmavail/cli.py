@@ -11,21 +11,21 @@ from .checker import check_name
 @click.argument("name", required=False)
 @click.option("--version", "-V", is_flag=True, help="Show version and exit")
 def cli(name, version):
-    """Nmck: Cross-domain name availability checker"""
+    """Nmavail: Cross-domain name availability checker"""
     if version:
-        click.echo(f"nmck version {importlib.metadata.version('nmck')}")
+        click.echo(f"nmavail version {importlib.metadata.version('nmavail')}")
         sys.exit(0)
 
     if not name:
         click.echo("Error: NAME is required")
-        click.echo("Use 'nmck --help' for more information")
+        click.echo("Use 'nmavail --help' for more information")
         sys.exit(1)
 
     asyncio.run(check_name(name))
 
 
 def main():
-    """Entry point for the nmck command"""
+    """Entry point for the nmavail command"""
     cli()
 
 
