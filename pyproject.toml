@@ -1,6 +1,6 @@
 [project]
 name = "nmavail"
-version = "0.4.1"
+version = "0.4.2"
 description = "A powerful CLI tool to check name availability across domains and platforms"
 readme = "README.md"
 license = {text = "MIT"}
