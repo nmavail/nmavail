@@ -50,5 +50,9 @@ env/
 .vscode/
 .idea/
 
+# AI Assistant configurations
+.lingma/
+.trae/
+
 # User configuration (contains tokens!)
 ~/.config/namok/
