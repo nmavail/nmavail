@@ -10,7 +10,7 @@ from .platforms.gitlab import GitLabChecker, GitLabRepoChecker
 from .platforms.packages import CRATES_CHECKER, GO_CHECKER, NPM_CHECKER, PYPI_CHECKER
 from .platforms.unix import AlpineChecker, AptChecker, AurChecker, HomebrewChecker
 
-console = Console()
+console = Console(highlight=False)
 
 # Dynamically generate all domain checkers
 domain_checkers = [DomainChecker(tld) for tld in POPULAR_TLDS]
@@ -39,8 +39,6 @@ async def _loading_animation(stop_event: asyncio.Event, prefix="Checking"):
 
 
 async def check_name(name: str):
-    console.print()  # Print empty line first
-
     # Start loading spinner
     stop_event = asyncio.Event()
     loading_task = asyncio.create_task(_loading_animation(stop_event, "Checking"))
@@ -111,8 +109,6 @@ async def check_name(name: str):
                 _loading_animation(stop_event, "Checking remaining")
             )
 
-    console.print()
-
 
 def _print_group(title, results, name=""):
     console.print(f"[bold]{title}:[/bold]")
@@ -165,8 +161,6 @@ def _print_group(title, results, name=""):
                 _print_github_repo_lines(result, indent=4)
             else:
                 _print_status_line(checker, result, indent=4, name=name)
-
-    console.print()  # Empty line separator
 
 
 def _print_github_repo_lines(result, indent=0, need_token=False):

@@ -7,7 +7,12 @@ import click
 from .checker import check_name
 
 
-@click.command()
+@click.command(
+    context_settings={"help_option_names": ["-h", "--help"]},
+    epilog="""\b
+Star on GitHub: https://github.com/nmavail/nmavail
+Report bugs:    https://github.com/nmavail/nmavail/issues/new"""
+)
 @click.argument("name", required=False)
 @click.option("--version", "-V", is_flag=True, help="Show version and exit")
 def cli(name, version):
