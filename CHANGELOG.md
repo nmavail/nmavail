@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-04-13
+
+### Changed
+- **Output formatting**: Disabled Rich auto-highlighting for consistent text display (numbers and brackets no longer highlighted)
+- **Help text**: Added GitHub star and bug report links to `--help` output
+- **Cleanup**: Removed extra empty lines from command output
+
+### Fixed
+- GitLab display text formatting (removed bold styling from "100" in parenthetical note)
+
 ## [0.4.2] - 2026-04-12
 
 ### Changed
