@@ -1,6 +1,6 @@
 # Nmavail
 
-[![PyPI version](https://img.shields.io/pypi/v/nmavail.svg?v=2)](https://pypi.org/project/nmavail/)
+[![PyPI version](https://img.shields.io/pypi/v/nmavail.svg?v=3)](https://pypi.org/project/nmavail/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Nmavail** is a powerful command-line tool designed to check the availability of names across multiple domains and platforms. Whether you are naming a startup, a new project, or an open-source library, Nmavail helps you secure your brand identity by verifying if a name is already taken.
