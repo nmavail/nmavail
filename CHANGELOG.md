@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## \[Unreleased]
 
+## \[0.4.4] - 2026-10-09
+
+### Fixed
+
+- **Crates.io**: The check was permanently unusable, reporting `HTTP 403` for every name. crates.io rejects requests without a `User-Agent`; all four package registry checks now send `Nmck-Checker/1.0`
+- **Proxy support**: `socks://` in `ALL_PROXY` / `all_proxy` caused every check to fail with `Unknown scheme for proxy URL`. Such values are now rewritten to `socks5://`, and any unusable proxy configuration falls back to a direct connection instead of aborting the run
+- **Resilience**: A single failing platform no longer aborts its whole group of checks; the failure is reported for that platform alone and the remaining results are still shown
+
+### Changed
+
+- **Dependencies**: `httpx` -> `httpx[socks]`, which pulls in `socksio` for SOCKS proxy support
+
 ## \[0.4.3] - 2026-04-13
 
 ### Changed

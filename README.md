@@ -14,6 +14,7 @@
 - **Asynchronous & Fast**: Uses async I/O to perform checks in parallel (~13 seconds total)
 - **Clean CLI Interface**: Provides a beautiful, easy-to-read terminal output with smooth loading animations
 - **No Configuration Required**: Works out of the box, no tokens or setup needed
+- **Proxy Aware**: Honours the standard `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY` environment variables, including SOCKS
 
 ## Installation
 
@@ -68,19 +69,13 @@ nmavail my-awesome-name
 
 **Example Output:**
 ```
-Package Registries:                                         
-    ✗   PyPI                : Taken
+Package Registries:
+    ✓   PyPI                : Available
     ✗   NPM                 : Taken
     ✓   Crates.io           : Available
     ✓   Go Modules          : Available
 
-System Packages:                                            
-    ✓   Homebrew            : Available
-    ✓   Arch (AUR)          : Available
-    ✓   Debian/Ubuntu       : Available
-    ✓   Alpine Linux        : Available
-
-Developer Platforms:                                        
+Developer Platforms:
   - GitHub:
     ✗   User/Org            : Taken
     ✗   Total Repos         : 9702854
@@ -90,7 +85,13 @@ Developer Platforms:
     ✗   Total Repos         : 100+
     ✗   Top Stars           : more than 0 stars
 
-Domains:                                                    
+System Packages:
+    ✓   Homebrew            : Available
+    ✓   Arch (AUR)          : Available
+    ✓   Debian/Ubuntu       : Available
+    ✓   Alpine Linux        : Available
+
+Domains:
     ✗   my-awesome-name.com : Taken
     ✓   my-awesome-name.io  : Available
     ✓   my-awesome-name.dev : Available
@@ -107,7 +108,7 @@ nmavail -V
 **Show Help:**
 ```bash
 nmavail --help
-nmavail -H
+nmavail -h
 ```
 
 **Examples:**
@@ -132,6 +133,34 @@ nmavail myproject
 - **Parallel execution**: All checks run concurrently
 - **Smart pagination**: GitLab limited to 1 page (100 results) for speed
 - **Optimized timeouts**: 10 second timeout per request
+
+## Proxy Support
+
+Nmavail relies on [httpx](https://www.python-httpx.org/) for its HTTP requests, so the usual
+proxy environment variables are picked up automatically:
+
+```bash
+export HTTP_PROXY=http://127.0.0.1:7890
+export HTTPS_PROXY=http://127.0.0.1:7890
+export NO_PROXY=localhost,127.0.0.1
+```
+
+SOCKS proxies are supported as well. Note that the scheme must be `socks5://` or `socks5h://`;
+the shorthand `socks://` is not a scheme httpx understands. If `socks://` is found, Nmavail
+rewrites it to `socks5://` and prints a warning, so an existing shell profile will keep working:
+
+```bash
+export ALL_PROXY=socks5://127.0.0.1:7890
+```
+
+If a proxy cannot be used at all, Nmavail falls back to a direct connection and reports the
+affected platforms with a `!` marker rather than aborting the run.
+
+To bypass the proxy entirely, unset the variables for a single run:
+
+```bash
+env -u ALL_PROXY -u all_proxy nmavail myproject
+```
 
 ## Development
 
