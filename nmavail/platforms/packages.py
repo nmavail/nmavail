@@ -16,9 +16,14 @@ class PackageChecker(BaseChecker):
 
     async def check(self, name: str) -> bool | dict:
         url = self._url_template.format(name=name)
+        # crates.io answers 403 to requests without a User-Agent; the other
+        # registries ignore it. Sending one keeps every checker consistent.
+        headers = {"User-Agent": "Nmck-Checker/1.0"}
         async with http_client() as client:
             try:
-                response = await client.get(url, timeout=DEFAULT_TIMEOUT)
+                response = await client.get(
+                    url, headers=headers, timeout=DEFAULT_TIMEOUT
+                )
                 if response.status_code == 404:
                     return True
                 elif response.status_code == 200:
