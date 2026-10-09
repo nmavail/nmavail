@@ -2,6 +2,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from ..config import DEFAULT_TIMEOUT
+from ..http import http_client
 from .base import BaseChecker
 
 
@@ -13,7 +14,7 @@ class BaseUnixChecker(BaseChecker):
     ) -> bool | dict:
         headers = {"User-Agent": "Nmck-Checker/1.0"}
         for url in urls:
-            async with httpx.AsyncClient() as client:
+            async with http_client() as client:
                 try:
                     response = await client.get(
                         url, headers=headers, timeout=DEFAULT_TIMEOUT
@@ -55,7 +56,7 @@ class HomebrewChecker(BaseUnixChecker):
         ]
         headers = {"User-Agent": "Nmck-Checker/1.0"}
         for url in urls:
-            async with httpx.AsyncClient() as client:
+            async with http_client() as client:
                 try:
                     response = await client.get(
                         url, headers=headers, timeout=DEFAULT_TIMEOUT
@@ -91,7 +92,7 @@ class AurChecker(BaseUnixChecker):
         ]
         headers = {"User-Agent": "Nmck-Checker/1.0"}
         for url in urls:
-            async with httpx.AsyncClient() as client:
+            async with http_client() as client:
                 try:
                     response = await client.get(
                         url, headers=headers, timeout=DEFAULT_TIMEOUT
@@ -130,7 +131,7 @@ class AptChecker(BaseUnixChecker):
         ]
         headers = {"User-Agent": "Nmck-Checker/1.0"}
         for url in urls:
-            async with httpx.AsyncClient() as client:
+            async with http_client() as client:
                 try:
                     response = await client.get(
                         url, headers=headers, timeout=DEFAULT_TIMEOUT
@@ -162,7 +163,7 @@ class AlpineChecker(BaseUnixChecker):
     async def check(self, name: str) -> bool | dict:
         url = f"https://pkgs.alpinelinux.org/packages?name={name}&branch=edge"
         headers = {"User-Agent": "Nmck-Checker/1.0"}
-        async with httpx.AsyncClient() as client:
+        async with http_client() as client:
             try:
                 response = await client.get(
                     url, headers=headers, timeout=DEFAULT_TIMEOUT

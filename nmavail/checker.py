@@ -38,6 +38,22 @@ async def _loading_animation(stop_event: asyncio.Event, prefix="Checking"):
     sys.stdout.flush()
 
 
+async def _safe_check(checker, name: str):
+    """Run a single checker, converting any escaping exception into an error dict.
+
+    A checker failing (bad proxy, DNS hiccup, unexpected payload) must not take
+    down the whole group -- the remaining checks are still worth reporting.
+    The ``{"error": ...}`` shape is what the printers already understand.
+    """
+    try:
+        return await checker.check(name)
+    except asyncio.CancelledError:
+        raise
+    except Exception as e:  # noqa: BLE001 - deliberately broad, reported to user
+        detail = str(e) or type(e).__name__
+        return {"error": detail[:80]}
+
+
 async def check_name(name: str):
     # Start loading spinner
     stop_event = asyncio.Event()
@@ -45,7 +61,7 @@ async def check_name(name: str):
 
     # Define group tasks
     async def run_group(checkers_list, _group_name):
-        tasks = [checker.check(name) for checker in checkers_list]
+        tasks = [_safe_check(checker, name) for checker in checkers_list]
         results = await asyncio.gather(*tasks)
         return list(zip(checkers_list, results, strict=False))
 

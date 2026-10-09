@@ -1,6 +1,7 @@
 import httpx
 
 from ..config import DEFAULT_TIMEOUT
+from ..http import http_client
 from .base import BaseChecker
 
 
@@ -17,7 +18,7 @@ class GitLabChecker(BaseChecker):
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
 
-        async with httpx.AsyncClient() as client:
+        async with http_client() as client:
             try:
                 response = await client.get(
                     url, headers=headers, timeout=DEFAULT_TIMEOUT
@@ -50,7 +51,7 @@ class GitLabRepoChecker(BaseChecker):
         }
 
         try:
-            async with httpx.AsyncClient() as client:
+            async with http_client() as client:
                 # Only fetch 1 page (100 results) to avoid slow queries
                 params = {
                     "search": name,

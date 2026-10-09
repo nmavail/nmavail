@@ -23,7 +23,8 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-    "httpx",
+    # [socks] pulls in socksio, required for socks5:// proxy URLs
+    "httpx[socks]",
     "click",
     "python-whois",
     "dnspython",

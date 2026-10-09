@@ -1,6 +1,7 @@
 import httpx
 
 from ..config import DEFAULT_TIMEOUT
+from ..http import http_client
 from .base import BaseChecker
 
 
@@ -13,7 +14,7 @@ class GitHubChecker(BaseChecker):
         url = f"https://api.github.com/users/{name}"
         headers = {}
 
-        async with httpx.AsyncClient() as client:
+        async with http_client() as client:
             try:
                 response = await client.get(
                     url, headers=headers, timeout=DEFAULT_TIMEOUT
@@ -43,7 +44,7 @@ class GitHubRepoChecker(BaseChecker):
         url = f"https://api.github.com/search/repositories?q={name}+in:name&per_page=1&sort=stars&order=desc"
         headers = {"Accept": "application/vnd.github.v3+json"}
 
-        async with httpx.AsyncClient() as client:
+        async with http_client() as client:
             try:
                 response = await client.get(
                     url, headers=headers, timeout=DEFAULT_TIMEOUT

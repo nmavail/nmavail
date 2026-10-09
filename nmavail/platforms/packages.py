@@ -1,6 +1,7 @@
 import httpx
 
 from ..config import DEFAULT_TIMEOUT
+from ..http import http_client
 from .base import BaseChecker
 
 
@@ -15,7 +16,7 @@ class PackageChecker(BaseChecker):
 
     async def check(self, name: str) -> bool | dict:
         url = self._url_template.format(name=name)
-        async with httpx.AsyncClient() as client:
+        async with http_client() as client:
             try:
                 response = await client.get(url, timeout=DEFAULT_TIMEOUT)
                 if response.status_code == 404:
